@@ -147,12 +147,7 @@ def executeChallenge():
         send_message(clave_para_enviar, receiver_email)
         #pedimos password
         clave_enviada = easygui.enterbox("Enter password for corporative mail challenge", "Email Key", "")
-
-    #mecanismo lock
-    if os.path.exists(folder+"/"+"lock"):
-        os.remove(folder+"/"+"lock")
     
-
     #ahora comparamos con la correcta
     
     clave_calculada = retrieve_key(clave_enviada, distancia)
@@ -177,6 +172,10 @@ def executeChallenge():
     else:#modo no parental
         cad=clave_calculada
     
+    #mecanismo lock
+    if os.path.exists(folder+"/"+"lock"):
+        os.remove(folder+"/"+"lock")
+
     key = bytes(cad,'utf-8')
     key_size = len(key)
 
