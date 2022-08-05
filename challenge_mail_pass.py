@@ -21,7 +21,10 @@ password_sender = "" #Due to last gmail security update, the app password is use
 
 
 # FUNCIONES AUXILIARES
-def generate_mail_key(clave_real,distancia):
+def generate_mail_key(clave_real:str,distancia:int) -> str:
+    """Esta funcion toma la clave real, y la procesa para producir una clave de salida distinta
+    Este procesado consiste en sumar la distancia un numero aleatorio de veces a cada letra para producir otra cadena
+    El numero aleatorio se incluye en la cadena de salida, para deshacer el proceso"""
     mail_key = ""
     factor = random.choice(range(1,9))
     for letter in clave_real:
@@ -32,7 +35,10 @@ def generate_mail_key(clave_real,distancia):
     #print("Por mail se envia: " + mail_key)
     return mail_key
 
-def retrieve_key(mail_key, distancia):
+def retrieve_key(mail_key:str , distancia:int) -> str:
+    """Esta funcion toma una clave y le aplica la inversa de la transformacion definida para obtener otra clave
+    Si la clave que le das es la que te llega via email, la que produce será la correcta, si no, cifra con la clave que produzca
+    El numero aleatorio usado en la funcion generate_mail_key se obtiene usando una expresion regular para no limitar el numero a ninguna cantidad maxima"""
     orig_key = ""
     #Cogemos el factor de la cadena, si no hay numeros el factor es cero
     match = re.search(r"[0-9]+",mail_key)
@@ -47,7 +53,8 @@ def retrieve_key(mail_key, distancia):
     #print("La clave original era: "+ orig_key)
     return orig_key
 
-def send_message(key_message, receiver_email):
+def send_message(key_message: str, receiver_email:str):
+    """Esta funcion envia un mail con la clave generada en generate_mail_key, es necesario tambien conocer el correo del destinatario"""
 
     if receiver_email == "":
         print("ERROR: No hay destinatario del mail, te recuerdo que el destinatario esta en el param3 del challenge")
@@ -96,7 +103,8 @@ def send_message(key_message, receiver_email):
         )
 
 # FUNCIONES DEL CHALLENGE
-def init(props):
+def init(props:dict) -> int:
+    """API Challenge: Funcion init, recibe y lee los parametros"""
     global props_dict
     print("Python: Enter in init")
     
@@ -114,7 +122,9 @@ def init(props):
         return -1
     """
 
-def executeChallenge():
+def executeChallenge() -> tuple:
+    """API Challenge: Funcion execute, asigna los parametros y realiza el challenge
+    Construccion de clave, enviar por mail, reconstruir clave, y producir salida """
     print("Starting execute")
     
     clave_real = props_dict["param1"] #La cojo de parametro pero seria mas seguro cogerla de otro lado
@@ -192,7 +202,7 @@ if __name__ == "__main__":
     #mode "parental" o "normal"
     midict={"param1": "secureworld",
             "param2": 43,
-            "param3": "",
+            "param3": "juanrd0088@gmail.com",
             "mode": "normal"}
 
     init(midict)
