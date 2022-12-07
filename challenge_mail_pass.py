@@ -6,6 +6,7 @@ import random, re, time
 import easygui
 import os
 from pathlib import Path
+import lock
 
 
 #VARIABLES GLOBALES
@@ -127,17 +128,18 @@ def executeChallenge() -> tuple:
     Construccion de clave, enviar por mail, reconstruir clave, y producir salida """
     print("Starting execute")
     
-    clave_real = props_dict["param1"] #La cojo de parametro pero seria mas seguro cogerla de otro lado
-    distancia = props_dict["param2"]
-    receiver_email = props_dict["param3"]
+    clave_real = props_dict["real_key"] #La cojo de parametro pero seria mas seguro cogerla de otro lado
+    distancia = props_dict["distance"]
+    receiver_email = props_dict["mail"]
     
 
     #mecanismo de lock BEGIN, para garantizar una sola interaccion con user a la vez
     #-----------------------
-    folder=os.environ['SECUREMIRROR_CAPTURES']
+    lock.lockIN("chmailcorpo")
+    '''folder=os.environ['SECUREMIRROR_CAPTURES']
     while os.path.exists(folder+"/"+"lock"):
         time.sleep(1)
-    Path(folder+"/"+"lock").touch()
+    Path(folder+"/"+"lock").touch()'''
 
 
 
@@ -145,7 +147,8 @@ def executeChallenge() -> tuple:
     send_mail=easygui.ynbox(msg='Pulsa Yes para recibir un email con la clave secreta',
                          choices=("Yes","Not"))
     if (send_mail==False):
-        os.remove(folder+"/"+"lock")
+        #os.remove(folder+"/"+"lock")
+        lock.lockOUT("chmailcorpo")
         result = (0,0)
         print ("result:",result)
         return result
@@ -183,8 +186,9 @@ def executeChallenge() -> tuple:
         cad=clave_calculada
     
     #mecanismo lock
-    if os.path.exists(folder+"/"+"lock"):
-        os.remove(folder+"/"+"lock")
+    lock.lockOUT("chmailcorpo")
+    '''if os.path.exists(folder+"/"+"lock"):
+        os.remove(folder+"/"+"lock")'''
 
     key = bytes(cad,'utf-8')
     key_size = len(key)
@@ -200,9 +204,9 @@ if __name__ == "__main__":
         password_sender=f.readline()
 
     #mode "parental" o "normal"
-    midict={"param1": "secureworld",
-            "param2": 43,
-            "param3": "juanrd0088@gmail.com",
+    midict={"real_key": "secureworld",
+            "distance": 43,
+            "mail": "juanrd0088@gmail.com",
             "mode": "normal"}
 
     init(midict)
