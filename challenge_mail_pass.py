@@ -14,11 +14,14 @@ easy_mode = False #Testing only: Si lo pones a true no te manda el mail y te esc
 props_dict={}
 abece = "abcdefghijklmnopqrstuvwxyz" #Para generar de forma sencilla claves nuevas
 
+
 #VARIABLES DE GESTION DEL EMAIL
 port = 465  # For SSL
 smtp_server = "smtp.gmail.com"
 sender_email = "secureworld.validator@gmail.com"  # Enter your address
 password_sender = "" #Due to last gmail security update, the app password is used instead the regular password
+with open("password.txt","r") as f:
+        password_sender=f.readline()
 
 
 # FUNCIONES AUXILIARES
