@@ -3,7 +3,8 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 import random, re, time
-import easygui
+from tkinter import simpledialog
+from tkinter import messagebox
 import os
 from pathlib import Path
 import lock
@@ -61,7 +62,7 @@ def send_message(key_message: str, receiver_email:str):
     """Esta funcion envia un mail con la clave generada en generate_mail_key, es necesario tambien conocer el correo del destinatario"""
 
     if receiver_email == "":
-        print("ERROR: No hay destinatario del mail, te recuerdo que el destinatario esta en el param3 del challenge")
+        print("ERROR: No hay destinatario del mail, te recuerdo que el destinatario esta en el param mail del challenge")
         return
 
     message = MIMEMultipart("alternative")
@@ -147,8 +148,9 @@ def executeChallenge() -> tuple:
 
 
     #Pulsa si, para que enviarte un correo con la clave
-    send_mail=easygui.ynbox(msg='Pulsa Yes para recibir un email con la clave secreta',
-                         choices=("Yes","Not"))
+    #send_mail=easygui.ynbox(msg='Pulsa Yes para recibir un email con la clave secreta',
+    #                     choices=("Yes","Not"))
+    send_mail = messagebox.askyesno("Email Key",'Pulsa Yes para recibir un email con la clave secreta')
     if (send_mail==False):
         #os.remove(folder+"/"+"lock")
         lock.lockOUT("chmailcorpo")
@@ -158,11 +160,13 @@ def executeChallenge() -> tuple:
 
     clave_para_enviar = generate_mail_key(clave_real,distancia)
     if easy_mode:
-        clave_enviada = easygui.enterbox("Enter password for corporative mail challenge", "Email Key", clave_para_enviar)
+        #clave_enviada = easygui.enterbox("Enter password for corporative mail challenge", "Email Key", clave_para_enviar)
+        clave_enviada = simpledialog.askstring("Email Key", "Enter password for corporative mail challenge", initialvalue=clave_para_enviar)
     else:
         send_message(clave_para_enviar, receiver_email)
         #pedimos password
-        clave_enviada = easygui.enterbox("Enter password for corporative mail challenge", "Email Key", "")
+        #clave_enviada = easygui.enterbox("Enter password for corporative mail challenge", "Email Key", "")
+        clave_enviada = simpledialog.askstring("Email Key", "Enter password for corporative mail challenge")
     
     #ahora comparamos con la correcta
     
@@ -177,7 +181,8 @@ def executeChallenge() -> tuple:
                 cad="\0" #bytearray(0) #"%d"%(0)
                 break
             else:
-                clave_enviada = easygui.enterbox(f"Enter password for corporative mail challenge (Intento {i+2})", "chpass", "")
+                #clave_enviada = easygui.enterbox(f"Enter password for corporative mail challenge (Intento {i+2})", "Email Key", "")
+                clave_enviada = simpledialog.askstring(f"Enter password for corporative mail challenge (Intento {i+2})", "Enter password for corporative mail challenge")
                 clave_calculada = retrieve_key(clave_enviada, distancia)
                 
         if (clave_calculada!=clave_real):
